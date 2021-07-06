@@ -24,6 +24,10 @@ aql=0.95
 rql=0.90
 iter_vals=np.arange(0, 1, 0.0001)
 
+title_string = "Double sampling plan for n=" + str(sample_size_1) + " and c=" + str(failures_1)
+plot1_title = "First Sampling (n=" + str(sample_size_1) + " and c=" + str(failures_1) + ')'
+plot2_title = "Second Sampling (n=" + str(sample_size_2) + " and c=" + str(failures_2) + ')'
+
 
 fig = make_subplots(subplot_titles=(plot1_title, plot2_title), shared_yaxes=True, rows=1, cols=2)
 
