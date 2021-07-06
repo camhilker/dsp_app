@@ -30,7 +30,7 @@ app.layout = html.Div(children=[
 
 
 
-    dcc.Graph(id='subplots')
+    dcc.Graph(id='subplots', responsive=False)
 ])
 
 
@@ -55,12 +55,12 @@ def update_figure(sample_size_1, sample_size_2, failures_1, failures_2, aql, rql
     fig = make_subplots(subplot_titles=(plot1_title, plot2_title), shared_yaxes=True, rows=1, cols=2)
 
     fig.add_trace(
-        go.Scatter(x=iter_vals, y=binom.cdf(failures_1, sample_size_1, iter_vals), name='CDF'),
+        go.Scatter(x=iter_vals, y=binom.cdf(failures_1, sample_size_1, iter_vals), hovertemplate='Probability of Acceptance: %{y:%.2f}<extra></extra>'),
         row=1, col=1)
 
     fig.add_trace(
         go.Scatter(x=iter_vals, y=binom.pmf(failures_2, sample_size_1, iter_vals)*
-                   binom.pmf(0, sample_size_2, iter_vals), name='PMF'),
+                   binom.pmf(0, sample_size_2, iter_vals), hovertemplate='Probability of Acceptance: %{y:%.2f}<extra></extra>'),
         row=1, col=2)
 
 
