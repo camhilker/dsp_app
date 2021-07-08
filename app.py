@@ -63,9 +63,9 @@ def update_figure(ss_1, ss_2, c_1, c_2, r, aql, rql):
     pass_1 = [i for i in range(c_1+1, r)]
     pass_tup = [(i, j) for i in pass_1 for j in ph if i+j <= c_2]
 
-    title_string = "Double sampling plan for n=" + str(ss_1) + " and c=" + str(c_1)
+    #title_string = "Double sampling plan for n=" + str(ss_1) + " and c=" + str(c_1)
     #plot1_title = "Single Sampling (n=" + str(ss_1) + ", c=" + str(c_1) + ')'
-    plot2_title = "Double Sampling (n=" + str(ss_1) + ", c=" + str(c_1) + ') and (n=' + str(ss_2) + ", c=" + str(c_2) + ")"
+    plot2_title = "Double Sampling (n1=" + str(ss_1) + ", c1=" + str(c_1) + ') and (n2=' + str(ss_2) + ", c2=" + str(c_2) + ")"
 
     fig = make_subplots(subplot_titles=(plot2_title, ' '), shared_yaxes=True, rows=1, cols=2)
     
