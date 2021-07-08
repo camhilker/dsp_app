@@ -21,10 +21,11 @@ app.layout = html.Div(children=[
 
     html.Br(),
 
-    html.Div(["Sample 1 Size: ", dcc.Input(id='ss1', value=100, type='number')]),
-    html.Div(["Sample 2 Size: ", dcc.Input(id='ss2', value=25, type='number')]),
-    html.Div(["Sample 1 Allowable Failures: ", dcc.Input(id='f1', value=4, type='number')]),
-    html.Div(["Sample 2 Allowable Failures: ", dcc.Input(id='f2', value=4, type='number')]),
+    html.Div(["Sample 1 Size (n1): ", dcc.Input(id='n1', value=100, type='number')]),
+    html.Div(["Sample 2 Size (n2): ", dcc.Input(id='n2', value=25, type='number')]),
+    html.Div(["Sample 1 Acceptance # (c1): ", dcc.Input(id='c1', value=4, type='number')]),
+    html.Div(["Sample 2 Acceptance # (c2): ", dcc.Input(id='c2', value=4, type='number')]),
+    html.Div(["Reject (r): ", dcc.Input(id='r', value=4, type='number')])
     html.Div(["AQL:  ", dcc.Input(id='aql_0', value=0.95, type='number')]),
     html.Div(["RQL: ", dcc.Input(id='rql_0', value=0.9, type='number')]),
 
@@ -36,31 +37,40 @@ app.layout = html.Div(children=[
 
 @app.callback(
     Output(component_id='subplots', component_property='figure'),
-    Input(component_id='ss1', component_property='value'),
-    Input(component_id='ss2', component_property='value'),
-    Input(component_id='f1', component_property='value'),
-    Input(component_id='f2', component_property='value'),
+    Input(component_id='n1', component_property='value'),
+    Input(component_id='n2', component_property='value'),
+    Input(component_id='c1', component_property='value'),
+    Input(component_id='c2', component_property='value'),
+    Input(component_id='r', component_property='value'),
     Input(component_id='aql_0', component_property='value'),
     Input(component_id='rql_0', component_property='value'))
 
-def update_figure(sample_size_1, sample_size_2, failures_1, failures_2, aql, rql):
+def make_perm(pass_tup, iter_vals, ss_1, ss_2, c_1):
+    big_array_list = [binom.pmf(i[0], ss_1, iter_vals)*binom.pmf(i[1], ss_2, iter_vals) for i in pass_tup]
+    big_array_list.append(binom.cdf(c_1, ss_1, iter_vals))
+    return sum(big_array_list)
+
+def update_figure(ss_1, ss_2, c_1, c_2, r, aql, rql):
 
     iter_vals=np.arange(0, 1, 0.0001)
+    
+    ph = [i for i in range(0, c_2-c_1)]
+    pass_1 = [i for i in range(c_1+1, r)]
+    pass_tup = [(i, j) for i in pass_1 for j in ph if i+j <= c2]
 
-    title_string = "Double sampling plan for n=" + str(sample_size_1) + " and c=" + str(failures_1)
-    plot1_title = "First Sampling (n=" + str(sample_size_1) + " and c=" + str(failures_1) + ')'
-    plot2_title = "Second Sampling (n=" + str(sample_size_2) + " and c=" + str(failures_2) + ')'
+    title_string = "Double sampling plan for n=" + str(ss_1) + " and c=" + str(c_1)
+    plot1_title = "Single Sampling (n=" + str(ss_1) + ", c=" + str(c_1) + ')'
+    plot2_title = "Double Sampling (n=" + str(ss_1) + ", c=" + str(c_1) + ') and (n=' + str(ss_2) + ", c=" + str(c_2) + ")"
 
 
     fig = make_subplots(subplot_titles=(plot1_title, plot2_title), shared_yaxes=True, rows=1, cols=2)
 
     fig.add_trace(
-        go.Scatter(x=iter_vals, y=binom.cdf(failures_1, sample_size_1, iter_vals), hovertemplate='Probability of Acceptance: %{y:%.2f}<extra></extra>'),
+        go.Scatter(x=iter_vals, y=binom.cdf(c_1, sample_size_1, iter_vals), hovertemplate='Probability of Acceptance: %{y:%.2f}<extra></extra>'),
         row=1, col=1)
 
     fig.add_trace(
-        go.Scatter(x=iter_vals, y=binom.pmf(failures_2, sample_size_1, iter_vals)*
-                   binom.pmf(0, sample_size_2, iter_vals), hovertemplate='Probability of Acceptance: %{y:%.2f}<extra></extra>'),
+        go.Scatter(x=iter_vals, y=make_perm(pass_tup, iter_vals, ss_1, ss_2, c_1), hovertemplate='Probability of Acceptance: %{y:%.2f}<extra></extra>'),
         row=1, col=2)
 
 
