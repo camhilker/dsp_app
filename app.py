@@ -25,7 +25,7 @@ app.layout = html.Div(children=[
     html.Div(["Sample 2 Size (n2): ", dcc.Input(id='n2', value=25, type='number')]),
     html.Div(["Sample 1 Acceptance # (c1): ", dcc.Input(id='c1', value=4, type='number')]),
     html.Div(["Sample 2 Acceptance # (c2): ", dcc.Input(id='c2', value=4, type='number')]),
-    html.Div(["Reject (r): ", dcc.Input(id='r', value=4, type='number')])
+    html.Div(["Reject (r): ", dcc.Input(id='r', value=4, type='number')]),
     html.Div(["AQL:  ", dcc.Input(id='aql_0', value=0.95, type='number')]),
     html.Div(["RQL: ", dcc.Input(id='rql_0', value=0.9, type='number')]),
 
