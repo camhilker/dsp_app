@@ -21,19 +21,61 @@ app.layout = html.Div(children=[
 
     html.Br(),
 
-    html.Div(["Sample 1 Size (n1): ", html.Br(), dcc.Input(id='n1', value=32, type='number'), html.Br(), 
-              "Sample 2 Size (n2): ", html.Br(), dcc.Input(id='n2', value=32, type='number'), html.Br(), 
-              "Sample 1 Acceptance # (c1): ", html.Br(), dcc.Input(id='c1', value=2, type='number'), html.Br(), 
-              "Sample 2 Acceptance # (c2): ", html.Br(), dcc.Input(id='c2', value=6, type='number'), html.Br(), 
-              "Reject (r): ", html.Br(), dcc.Input(id='r', value=5, type='number'), html.Br(), 
-              "AQL:  ", html.Br(), dcc.Input(id='aql_0', value=0.95, type='number'), html.Br(), 
-              "RQL: ", html.Br(), dcc.Input(id='rql_0', value=0.9, type='number')], 
-             
-             style={'float': 'left','margin': 'auto', 'width':'18%', 'padding':'15px'}),
+    html.Div(
+        [html.Div(
+            [html.Div(
+                ["Sample 1 Size (n1): ", 
+                html.Br(), 
+                dcc.Input(id='n1', value=32, type='number'), 
+                html.Br(), 
+                
+                "Sample 1 Acceptance # (c1): ", 
+                html.Br(), 
+                dcc.Input(id='c1', value=2, type='number')], 
+
+                style={'margin': 'auto', 'display':'table-cell'}),
+            
+
+
+            html.Div(
+                ["Sample 2 Size (n2): ", 
+                html.Br(), 
+                dcc.Input(id='n2', value=32, type='number'), 
+                html.Br(), 
+                
+                "Sample 2 Acceptance # (c2): ", 
+                html.Br(), 
+                dcc.Input(id='c2', value=6, type='number')],
+                         
+                style={'margin': 'auto', 'display':'table-cell'}),
+            
+
+
+            html.Div(
+                ["Reject (r): ", 
+                html.Br(), 
+                dcc.Input(id='r', value=5, type='number'), 
+                html.Br(), 
+
+                "AQL:  ", 
+                html.Br(), 
+                dcc.Input(id='aql_0', value=0.95, type='number'), 
+                html.Br(), 
+
+                "RQL: ", 
+                html.Br(), 
+                dcc.Input(id='rql_0', value=0.9, type='number')], 
+                         
+                style={'margin': 'auto', 'display':'table-cell'})], 
+
+            style={'margin': 'auto', 'display':'table-row'})],
+
+    style={'margin': 'auto', 'width':'100%', 'display':'table'}),
+
 
     html.Div(dcc.Graph(id='subplots', responsive=False), 
-             
-             style={'float': 'left','margin': 'auto', 'width':'80%'})
+                 
+            style={'margin': 'auto', 'width':'50%', 'display':'table'}),
 ])
 
 
