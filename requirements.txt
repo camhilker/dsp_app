@@ -3,7 +3,6 @@ certifi
 click
 dash
 dash-core-components
-dash-bootstrap-components
 dash-html-components
 dash-renderer
 dash-table
