@@ -73,7 +73,12 @@ app.layout = html.Div(children=[
                 style={'margin': 'auto', 'display':'table-cell'}),
 
             html.Div(
-                ["Sample 2 Size (n2): ", 
+                [html.Br(),
+                html.Br(),
+                html.Br(),
+                html.Br(),
+                    
+                "Sample 2 Size (n2): ", 
                 html.Br(), 
                 dcc.Input(id='n2', value=32, type='number'), 
                 html.Br(),
