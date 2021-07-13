@@ -4,7 +4,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 
 import numpy as np
-from scipy.stats import binom
+from scipy.stats import binom, hypergeom
 
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -47,7 +47,7 @@ app.index_string = """<!DOCTYPE html>
 
 
 app.layout = html.Div(children=[
-    html.H1(children='Double Sampling Plan Generator'),
+    html.H3(children='Double Sampling Plan Generator'),
 
     html.Br(),
 
@@ -56,7 +56,7 @@ app.layout = html.Div(children=[
             [html.Div(
                 ["Lot Size: ", 
                 html.Br(), 
-                dcc.Input(id='lot', value=1000, type='number'), 
+                dcc.Input(id='lot_0', value=1000, type='number'), 
                 html.Br(),
                 html.Br(),
 
@@ -126,7 +126,7 @@ app.layout = html.Div(children=[
     [Output(component_id='err_1', component_property='style'),
     Output(component_id='err_2', component_property='style'),
     Output(component_id='subplots', component_property='figure')],
-    [Input(component_id='lot', component_property='value'),
+    [Input(component_id='lot_0', component_property='value'),
     Input(component_id='n1', component_property='value'),
     Input(component_id='n2', component_property='value'),
     Input(component_id='c1', component_property='value'),
@@ -156,8 +156,6 @@ def update_figure(lot, ss_1, ss_2, c_1, c_2, r, aql, rql):
 
     else:
 
-
-
         iter_vals=np.arange(0, 1, 0.0001)
         
         ph = [i for i in range(0, c_2-c_1)]
@@ -167,36 +165,58 @@ def update_figure(lot, ss_1, ss_2, c_1, c_2, r, aql, rql):
         title_string = "Double sampling plan for n=" + str(ss_1) + " and c=" + str(c_1)
         #plot1_title = "Single Sampling (n=" + str(ss_1) + ", c=" + str(c_1) + ')'
         plot2_title = "Double Sampling (n=" + str(ss_1) + ", c=" + str(c_1) + ') and (n=' + str(ss_2) + ", c=" + str(c_2) + ")"
-
-        fig = make_subplots(subplot_titles=(plot2_title, ' '), shared_yaxes=True, rows=1, cols=2)
         
-        #fig = make_subplots(subplot_titles=(plot1_title, plot2_title), shared_yaxes=True, rows=1, cols=2)
 
-        #fig.add_trace(
-        #    go.Scatter(x=iter_vals, y=binom.cdf(c_1, sample_size_1, iter_vals), hovertemplate='Probability of Acceptance: %{y:%.2f}<extra></extra>'),
-        #    row=1, col=1)
 
-        fig.add_trace(
-            go.Scatter(x=iter_vals, y=make_perm(pass_tup, iter_vals, ss_1, ss_2, c_1), hovertemplate='Probability of Acceptance: %{y:%.2f}<extra></extra>'),
-            row=1, col=1)
+        if ss_1 + ss_2 > 0.1*lot:
+            trace = go.Scatter(x=iter_vals, y=make_perm(lot, pass_tup, iter_vals, ss_1, ss_2, c_1), 
+                marker_color='red', hovertemplate='Probability of Acceptance: %{y:%.2f}<extra></extra>')
+            layout = go.Layout(title=plot2_title+': Hypergeometric Distribution')
+
+        else:
+            trace = go.Scatter(x=iter_vals, y=make_perm(lot, pass_tup, iter_vals, ss_1, ss_2, c_1), 
+                marker_color='blue', hovertemplate='Probability of Acceptance: %{y:%.2f}<extra></extra>')
+            layout = go.Layout(title=plot2_title+': Binomial Distribution')
+
+
+
+        fig = go.Figure(data=trace, layout=layout)
+
+
 
         if type(aql) == float:
             fig.add_hline(y=aql, line_width=2, line_dash="dash", line_color="black")    
         if type(rql) == float:
             fig.add_hline(y=1-rql, line_width=2, line_dash="dash", line_color="black")
             
-        fig.update_xaxes(title_text="Fraction Defective", row=1, col=1)
-        fig.update_xaxes(title_text="Fraction Defective", row=1, col=2)
-        fig.update_yaxes(title_text="Probability of Acceptance", row=1, col=1)
+        fig.update_xaxes(title_text="Fraction Defective")
+        fig.update_yaxes(title_text="Probability of Acceptance")
 
-        fig.update_layout(height=600, width=1500, showlegend=False, template='plotly_white', hovermode='x unified')
+        fig.update_layout(height=600, width=900, showlegend=False, template='plotly_white', hovermode='x unified')
 
         return {'display':'none'}, {'display':'none'}, fig
 
 
-def make_perm(pass_tup, iter_vals, ss_1, ss_2, c_1):
-    big_array_list = [binom.pmf(i[0], ss_1, iter_vals)*binom.pmf(i[1], ss_2, iter_vals) for i in pass_tup]
-    big_array_list.append(binom.cdf(c_1, ss_1, iter_vals))
+
+def lot_dist(lot, c, n, n2, iter_val, cdf=True):
+    # n is the sample that you're using in the actual calculation, n2 is the other sample that you're ONLY using to add to n to determine if it's >10% of lot
+    # meaning, it could be flipped! double check assignments in make_perm()!!!!!!!
+    if n + n2 > 0.1*lot:
+        if cdf == True:
+            return hypergeom.cdf(c, lot, n, iter_val*lot)
+        elif cdf == False:
+            return hypergeom.pmf(c, lot, n, iter_val*lot)
+    else:
+        if cdf == True:
+            return binom.cdf(c, n, iter_val)
+        elif cdf == False:
+            return binom.pmf(c, n, iter_val)
+
+
+
+def make_perm(lot, pass_tup, iter_vals, ss_1, ss_2, c_1):
+    big_array_list = [lot_dist(lot, i[0], ss_1, ss_2, iter_vals, cdf=False)*lot_dist(lot, i[1], ss_2, ss_1, iter_vals, cdf=False) for i in pass_tup]
+    big_array_list.append(lot_dist(lot, c_1, ss_1, ss_2, iter_vals, cdf=True))
     return sum(big_array_list)
 
 
