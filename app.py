@@ -54,31 +54,28 @@ app.layout = html.Div(children=[
     html.Div(
         [html.Div(
             [html.Div(
-                ["Lot Size: ", 
-                html.Br(), 
-                dcc.Input(id='lot_0', value=1000, type='number'), 
+                ["Sample 1 Size (n1): ",
                 html.Br(),
-                html.Br(),
-
-                "Sample 1 Size (n1): ", 
-                html.Br(), 
                 dcc.Input(id='n1', value=32, type='number'), 
                 html.Br(),
                 html.Br(), 
                 
                 "Sample 1 Acceptance # (c1): ", 
                 html.Br(), 
-                dcc.Input(id='c1', value=2, type='number')], 
+                dcc.Input(id='c1', value=2, type='number'),
+                html.Br(),
+                html.Br(),
+
+                "Lot Size: ", 
+                html.Br(), 
+                dcc.Input(id='lot_0', value=1000, type='number'), 
+                html.Br(),
+                html.Br()], 
 
                 style={'margin': 'auto', 'display':'table-cell'}),
 
             html.Div(
-                [html.Br(),
-                html.Br(),
-                html.Br(),
-                html.Br(),
-                    
-                "Sample 2 Size (n2): ", 
+                ["Sample 2 Size (n2): ", 
                 html.Br(), 
                 dcc.Input(id='n2', value=32, type='number'), 
                 html.Br(),
